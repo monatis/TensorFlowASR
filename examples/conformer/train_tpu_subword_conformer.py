@@ -15,7 +15,9 @@
 import os
 import math
 import argparse
-from tensorflow_asr.utils import setup_environment, setup_tpu
+
+from tensorflow.python.distribute.distribute_lib import Strategy
+from tensorflow_asr.utils import setup_environment, setup_tpu, setup_strategy
 
 setup_environment()
 import tensorflow as tf
@@ -113,7 +115,8 @@ eval_dataset.max_input_length, eval_dataset.max_label_length, eval_dataset.max_p
 input_shape = speech_featurizer.shape
 input_shape[0] = max_input_length
 
-strategy = setup_tpu(args.tpu_address)
+# strategy = setup_tpu(args.tpu_address)
+strategy = setup_strategy([0])
 
 conformer_trainer = TransducerTrainer(
     config=config.learning_config.running_config,
