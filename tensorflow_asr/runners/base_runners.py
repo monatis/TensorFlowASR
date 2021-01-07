@@ -218,7 +218,7 @@ class BaseTrainer(BaseRunner):
             train_steps += 1
 
             # Run save checkpoint
-            #self._check_save_interval()
+            self._check_save_interval()
 
             # Print epoch info
             self.train_progbar.set_description_str(
@@ -323,10 +323,10 @@ class BaseTrainer(BaseRunner):
                 self.train_metrics[metric].reset_states()
 
     def _check_save_interval(self):
-        return # just for debugging
         """Save log interval."""
-        if (self.steps % self.config.save_interval_steps == 0) or \
-                (self.total_train_steps and self.steps >= self.total_train_steps):
+        if tf.truncatemod(self.steps, self.config.save_interval_steps) == 0:
+        #if (self.steps % self.config.save_interval_steps == 0) or \
+                #(self.total_train_steps and self.steps >= self.total_train_steps):
             self.save_checkpoint()
             self.save_model_weights()
 
