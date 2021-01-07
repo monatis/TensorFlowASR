@@ -25,6 +25,7 @@ import tensorflow as tf
 DEFAULT_YAML = os.path.join(os.path.abspath(os.path.dirname(__file__)), "config.yml")
 
 tf.keras.backend.clear_session()
+tf.config.set_soft_device_placement(True) # summary writing might require this.
 
 parser = argparse.ArgumentParser(prog="Conformer Training")
 
@@ -115,8 +116,8 @@ eval_dataset.max_input_length, eval_dataset.max_label_length, eval_dataset.max_p
 input_shape = speech_featurizer.shape
 input_shape[0] = max_input_length
 
-# strategy = setup_tpu(args.tpu_address)
-strategy = setup_strategy([0])
+strategy = setup_tpu(args.tpu_address)
+# strategy = setup_strategy([0])
 
 conformer_trainer = TransducerTrainer(
     config=config.learning_config.running_config,
