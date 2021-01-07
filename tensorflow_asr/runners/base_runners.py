@@ -323,6 +323,7 @@ class BaseTrainer(BaseRunner):
                 self.train_metrics[metric].reset_states()
 
     def _check_save_interval(self):
+        return # just for debugging
         """Save log interval."""
         if (self.steps % self.config.save_interval_steps == 0) or \
                 (self.total_train_steps and self.steps >= self.total_train_steps):
