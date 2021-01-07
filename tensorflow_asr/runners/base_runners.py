@@ -218,14 +218,14 @@ class BaseTrainer(BaseRunner):
             train_steps += 1
 
             # Run save checkpoint
-            self._check_save_interval()
+            #self._check_save_interval()
 
             # Print epoch info
             self.train_progbar.set_description_str(
                 f"[Train] [Epoch {self.epochs}/{self.config.num_epochs}]")
 
             # Print train info to progress bar
-            self._print_train_metrics(self.train_progbar)
+            #self._print_train_metrics(self.train_progbar)
 
             # Run logging
             self._check_log_interval()
