@@ -228,10 +228,10 @@ class BaseTrainer(BaseRunner):
             #self._print_train_metrics(self.train_progbar)
 
             # Run logging
-            self._check_log_interval()
+            #self._check_log_interval()
 
             # Run evaluation
-            self._check_eval_interval()
+            #self._check_eval_interval()
 
         self.train_steps_per_epoch = train_steps
         self.train_progbar.total = self.total_train_steps
