@@ -15,6 +15,7 @@
 # limitations under the License.
 import abc
 import os
+from tensorflow.python.ops.variables import trainable_variables
 from tqdm import tqdm
 from colorama import Fore
 
@@ -83,7 +84,7 @@ class BaseTrainer(BaseRunner):
         with self.strategy.scope():
             self.set_train_metrics()
             self.set_eval_metrics()
-
+            
     @property
     def total_train_steps(self):
         if self.train_steps_per_epoch is None: return None
@@ -149,8 +150,8 @@ class BaseTrainer(BaseRunner):
         with self.strategy.scope():
             self.ckpt = tf.train.Checkpoint(steps=self.steps, **kwargs)
             checkpoint_dir = os.path.join(self.config.outdir, "checkpoints")
-            if not os.path.exists(checkpoint_dir):
-                os.makedirs(checkpoint_dir)
+            if not tf.io.gfile.exists(checkpoint_dir):
+                tf.io.gfile.makedirs(checkpoint_dir)
             self.ckpt_manager = tf.train.CheckpointManager(
                 self.ckpt, checkpoint_dir, max_to_keep=max_to_keep)
 
@@ -209,6 +210,8 @@ class BaseTrainer(BaseRunner):
                 break
             except tf.errors.OutOfRangeError:
                 break
+            except tf.errors.CancelledError:
+                break
             except Exception as e:
                 raise e
 
@@ -218,7 +221,7 @@ class BaseTrainer(BaseRunner):
             train_steps += 1
 
             # Run save checkpoint
-            tf.cond(tf.truncatemod(self.steps, self.config.save_interval_steps) == 0, lambda: self._check_save_interval(), lambda: False)
+            # self._check_save_interval()
 
             # Print epoch info
             self.train_progbar.set_description_str(
@@ -324,12 +327,10 @@ class BaseTrainer(BaseRunner):
 
     def _check_save_interval(self):
         """Save log interval."""
-        #if self.steps self.config.save_interval_steps == 0:
         #if (self.steps % self.config.save_interval_steps == 0) or \
                 #(self.total_train_steps and self.steps >= self.total_train_steps):
         self.save_checkpoint()
         self.save_model_weights()
-        return True
 
     def _check_eval_interval(self):
         """Save log interval."""
