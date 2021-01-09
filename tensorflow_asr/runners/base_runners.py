@@ -74,7 +74,7 @@ class BaseTrainer(BaseRunner):
         self.set_strategy(strategy)
         # Steps and Epochs start from 0
         # Step must be int64 to use tf.summary
-        # self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
+        self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
         self.train_steps_per_epoch = None
         self.eval_steps_per_epoch = None
         # Dataset
@@ -84,7 +84,6 @@ class BaseTrainer(BaseRunner):
         with self.strategy.scope():
             self.set_train_metrics()
             self.set_eval_metrics()
-            self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
             
     @property
     def total_train_steps(self):
@@ -208,8 +207,7 @@ class BaseTrainer(BaseRunner):
             try:
                 self._train_function(train_iterator) 
                 # Update steps
-                with self.strategy.scope():
-                    self.steps.assign_add(1)
+                self.steps.assign_add(1)
                 self.train_progbar.update(1)
                 train_steps += 1
             except StopIteration:
@@ -223,8 +221,6 @@ class BaseTrainer(BaseRunner):
                 break
             except Exception as e:
                 raise e
-
-            print("One epoch finished")
 
             # Run save checkpoint
             # self._check_save_interval()
@@ -242,6 +238,7 @@ class BaseTrainer(BaseRunner):
             # Run evaluation
             #self._check_eval_interval()
 
+        print("one epoch finished")
         self.train_steps_per_epoch = train_steps
         self.train_progbar.total = self.total_train_steps
         self.train_progbar.refresh()
