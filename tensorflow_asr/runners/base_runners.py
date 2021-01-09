@@ -93,7 +93,7 @@ class BaseTrainer(BaseRunner):
     @property
     def epochs(self):
         if self.train_steps_per_epoch is None: return 1
-        return (self.steps.numpy() // self.train_steps_per_epoch) + 1
+        return int((self.steps // self.train_steps_per_epoch) + 1)
 
     # -------------------------------- GET SET -------------------------------------
 
