@@ -125,6 +125,7 @@ class BaseTrainer(BaseRunner):
         self.config.accumulation_steps = train_acs  # update accum steps fed from arguments
 
         self.train_data = train_dataset.create(self.global_batch_size)
+        self.train_data = self.train_data.repeat(self.config.num_epochs)
         self.train_data_loader = self.strategy.experimental_distribute_dataset(self.train_data)
         if hasattr(self, "accumulation") and train_dataset.total_steps is not None:
             self.train_steps_per_epoch = train_dataset.total_steps // self.config.accumulation_steps
@@ -203,7 +204,7 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        while True:
+        for _ in range(self.train_data.cardinality() // self.config.num_epochs):
             try:
                 self._train_function(train_iterator)  # Run train step
             except StopIteration:
