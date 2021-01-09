@@ -75,6 +75,7 @@ class BaseTrainer(BaseRunner):
         # Steps and Epochs start from 0
         # Step must be int64 to use tf.summary
         self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
+        self.epochs = 1
         self.train_steps_per_epoch = None
         self.eval_steps_per_epoch = None
         # Dataset
@@ -90,10 +91,10 @@ class BaseTrainer(BaseRunner):
         if self.train_steps_per_epoch is None: return None
         return self.config.num_epochs * self.train_steps_per_epoch
 
-    @property
-    def epochs(self):
-        if self.train_steps_per_epoch is None: return 1
-        return int((self.steps // self.train_steps_per_epoch) + 1)
+    #@property
+    #def epochs(self):
+        #if self.train_steps_per_epoch is None: return 1
+        #return int((self.steps // self.train_steps_per_epoch) + 1)
 
     # -------------------------------- GET SET -------------------------------------
 
@@ -239,6 +240,7 @@ class BaseTrainer(BaseRunner):
             #self._check_eval_interval()
 
         print("one epoch finished")
+        self.epochs += 1
         self.train_steps_per_epoch = train_steps
         self.train_progbar.total = self.total_train_steps
         self.train_progbar.refresh()
