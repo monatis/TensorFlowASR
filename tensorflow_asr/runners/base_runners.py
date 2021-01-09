@@ -230,7 +230,7 @@ class BaseTrainer(BaseRunner):
                 f"[Train] [Epoch {self.epochs}/{self.config.num_epochs}]")
 
             # Print train info to progress bar
-            #self._print_train_metrics(self.train_progbar)
+            self._print_train_metrics(self.train_progbar)
 
             # Run logging
             #self._check_log_interval()
@@ -245,9 +245,8 @@ class BaseTrainer(BaseRunner):
 
     @tf.function
     def _train_function(self, iterator):
-        batch = iterator.get_next_as_optional()
-        if batch.has_value():
-            self.strategy.run(self._train_step, args=(batch.get_value(),))
+        batch = next(iterator)
+            self.strategy.run(self._train_step, args=(batch,))
             
     @abc.abstractmethod
     def _train_step(self, batch):
@@ -347,7 +346,7 @@ class BaseTrainer(BaseRunner):
     def _print_train_metrics(self, progbar):
         result_dict = {}
         for key, value in self.train_metrics.items():
-            result_dict[f"{key}"] = str(value.result().numpy())
+            result_dict[f"{key}"] = str(float(value.result()))
         progbar.set_postfix(result_dict)
 
     def _print_eval_metrics(self, progbar):
