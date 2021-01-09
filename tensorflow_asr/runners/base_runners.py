@@ -207,10 +207,13 @@ class BaseTrainer(BaseRunner):
             try:
                 self._train_function(train_iterator)  # Run train step
             except StopIteration:
-                break
+                print("Got StopIteration")
+                # break
             except tf.errors.OutOfRangeError:
+                print("Got OutOfRange")
                 break
             except tf.errors.CancelledError:
+                print("got CancelledError")
                 break
             except Exception as e:
                 raise e
