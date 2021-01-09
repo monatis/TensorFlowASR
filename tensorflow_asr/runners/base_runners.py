@@ -204,7 +204,7 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        for _ in range(self.train_data.cardinality() // self.config.num_epochs):
+        for _ in range(28655):
             try:
                 self._train_function(train_iterator)  # Run train step
             except StopIteration:
