@@ -246,7 +246,7 @@ class BaseTrainer(BaseRunner):
         self.train_progbar.total = self.total_train_steps
         self.train_progbar.refresh()
 
-    @tf.function
+    #@tf.function
     def _train_function(self, iterator):
         batch = iterator.get_next_as_optional()
         if batch.has_value():
