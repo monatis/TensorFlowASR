@@ -203,7 +203,7 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        for _ in range(28655):
+        while True:
             try:
                 self._train_function(train_iterator)  # Run train step
             except StopIteration:
@@ -218,6 +218,7 @@ class BaseTrainer(BaseRunner):
             except Exception as e:
                 raise e
 
+            print("One epoch finished")
             # Update steps
             self.steps.assign_add(1)
             self.train_progbar.update(1)
