@@ -230,7 +230,7 @@ class BaseTrainer(BaseRunner):
                 f"[Train] [Epoch {self.epochs}/{self.config.num_epochs}]")
 
             # Print train info to progress bar
-            self._print_train_metrics(self.train_progbar)
+            #self._print_train_metrics(self.train_progbar)
 
             # Run logging
             #self._check_log_interval()
