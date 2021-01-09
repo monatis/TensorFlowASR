@@ -203,7 +203,6 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        print(f" training for {len(train_iterator)} per epochs")
         for _ in range(28655):
             try:
                 self._train_function(train_iterator)  # Run train step
