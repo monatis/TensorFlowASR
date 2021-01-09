@@ -204,10 +204,14 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        epoch_finished = False
-        while not epoch_finished:
+        while True:
             try:
-                epoch_finished = self._train_function(train_iterator) 
+                self._train_function(train_iterator) 
+                # Update steps
+                with self.strategy.scope():
+                    self.steps.assign_add(1)
+                self.train_progbar.update(1)
+                train_steps += 1
             except StopIteration:
                 print("Got StopIteration")
                 # break
@@ -221,10 +225,6 @@ class BaseTrainer(BaseRunner):
                 raise e
 
             print("One epoch finished")
-            # Update steps
-            self.steps.assign_add(1)
-            self.train_progbar.update(1)
-            train_steps += 1
 
             # Run save checkpoint
             # self._check_save_interval()
@@ -246,15 +246,12 @@ class BaseTrainer(BaseRunner):
         self.train_progbar.total = self.total_train_steps
         self.train_progbar.refresh()
 
-    #@tf.function
+    @tf.function
     def _train_function(self, iterator):
         batch = iterator.get_next_as_optional()
         if batch.has_value():
             self.strategy.run(self._train_step, args=(batch.get_value(),))
-            return False
-        else:
-            return True
-
+            
     @abc.abstractmethod
     def _train_step(self, batch):
         """ One step training. Does not return anything"""
