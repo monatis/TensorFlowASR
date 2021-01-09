@@ -213,7 +213,7 @@ class BaseTrainer(BaseRunner):
                 train_steps += 1
             except StopIteration:
                 print("Got StopIteration")
-                # break
+                break
             except tf.errors.OutOfRangeError:
                 print("Got OutOfRange")
                 break
