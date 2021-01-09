@@ -74,7 +74,7 @@ class BaseTrainer(BaseRunner):
         self.set_strategy(strategy)
         # Steps and Epochs start from 0
         # Step must be int64 to use tf.summary
-        self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
+        # self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
         self.train_steps_per_epoch = None
         self.eval_steps_per_epoch = None
         # Dataset
@@ -84,6 +84,7 @@ class BaseTrainer(BaseRunner):
         with self.strategy.scope():
             self.set_train_metrics()
             self.set_eval_metrics()
+            self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
             
     @property
     def total_train_steps(self):
@@ -203,9 +204,10 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        while True:
+        epoch_finished = False
+        while not epoch_finished:
             try:
-                self._train_function(train_iterator)  # Run train step
+                epoch_finished = self._train_function(train_iterator) 
             except StopIteration:
                 print("Got StopIteration")
                 # break
@@ -246,8 +248,12 @@ class BaseTrainer(BaseRunner):
 
     @tf.function
     def _train_function(self, iterator):
-        batch = next(iterator)
-        self.strategy.run(self._train_step, args=(batch,))
+        batch = iterator.get_next_as_optional()
+        if batch.has_value():
+            self.strategy.run(self._train_step, args=(batch.get_value(),))
+            return False
+        else:
+            return True
 
     @abc.abstractmethod
     def _train_step(self, batch):
