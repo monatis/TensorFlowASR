@@ -149,8 +149,8 @@ class BaseTrainer(BaseRunner):
         with self.strategy.scope():
             self.ckpt = tf.train.Checkpoint(steps=self.steps, **kwargs)
             checkpoint_dir = os.path.join(self.config.outdir, "checkpoints")
-            if not os.path.exists(checkpoint_dir):
-                os.makedirs(checkpoint_dir)
+            if not tf.io.gfile.exists(checkpoint_dir):
+                tf.io.gfile.makedirs(checkpoint_dir)
             self.ckpt_manager = tf.train.CheckpointManager(
                 self.ckpt, checkpoint_dir, max_to_keep=max_to_keep)
 
@@ -218,22 +218,24 @@ class BaseTrainer(BaseRunner):
             train_steps += 1
 
             # Run save checkpoint
-            self._check_save_interval()
+            # self._check_save_interval()
 
             # Print epoch info
             self.train_progbar.set_description_str(
                 f"[Train] [Epoch {self.epochs}/{self.config.num_epochs}]")
 
             # Print train info to progress bar
-            self._print_train_metrics(self.train_progbar)
+            # self._print_train_metrics(self.train_progbar)
 
             # Run logging
-            self._check_log_interval()
+            # self._check_log_interval()
 
             # Run evaluation
-            self._check_eval_interval()
+            # self._check_eval_interval()
 
         self.train_steps_per_epoch = train_steps
+        self.save_checkpoint()
+        self.save_model_weights()
         self.train_progbar.total = self.total_train_steps
         self.train_progbar.refresh()
 
