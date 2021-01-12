@@ -53,6 +53,7 @@ parser.add_argument("--bfs", type=int, default=100, help="Buffer size for shuffl
 args = parser.parse_args()
 
 tf.config.optimizer.set_experimental_options({"auto_mixed_precision": args.mxp})
+tf.config.set_soft_device_placement(True)
 
 from tensorflow_asr.configs.config import Config
 from tensorflow_asr.datasets.asr_dataset import ASRTFRecordDataset
