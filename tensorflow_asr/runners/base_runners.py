@@ -240,11 +240,8 @@ class BaseTrainer(BaseRunner):
 
     @tf.function
     def _train_function(self, iterator):
-        for _ in tf.range(5):
-            batch = iterator.get_next_as_optional()
-            if not batch.has_value():
-                break
-            self.strategy.run(self._train_step, args=(batch.get_value(),))
+        batch = next(iterator)
+        return self..strategy.run(self._train_step, args=(batch,))
 
     @abc.abstractmethod
     def _train_step(self, batch):

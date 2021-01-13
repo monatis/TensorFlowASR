@@ -64,6 +64,7 @@ class TransducerTrainer(BaseTrainer):
         self.optimizer.apply_gradients(zip(gradients, self.model.trainable_variables))
 
         self.train_metrics["transducer_loss"].update_state(per_train_loss)
+        return train_loss
 
     @tf.function(experimental_relax_shapes=True)
     def _eval_step(self, batch):
