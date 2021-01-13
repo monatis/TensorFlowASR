@@ -74,6 +74,7 @@ class BaseTrainer(BaseRunner):
         # Steps and Epochs start from 0
         # Step must be int64 to use tf.summary
         self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
+        self.epochs = 0
         self.train_steps_per_epoch = None
         self.eval_steps_per_epoch = None
         # Dataset
@@ -89,10 +90,10 @@ class BaseTrainer(BaseRunner):
         if self.train_steps_per_epoch is None: return None
         return self.config.num_epochs * self.train_steps_per_epoch
 
-    @property
-    def epochs(self):
-        if self.train_steps_per_epoch is None: return 1
-        return (self.steps.numpy() // self.train_steps_per_epoch) + 1
+    #@property
+    #def epochs(self):
+        #if self.train_steps_per_epoch is None: return 1
+        #return (self.steps.numpy() // self.train_steps_per_epoch) + 1
 
     # -------------------------------- GET SET -------------------------------------
 
@@ -188,12 +189,12 @@ class BaseTrainer(BaseRunner):
             desc="[Train]"
         )
 
-        while not self._finished():
+        for _ in range(self.config.num_epochs):
             self._train_epoch()
 
-        # save when training is done
-        self.save_checkpoint()
-        self.save_model_weights()
+            # save at the end of epoch
+            self.save_checkpoint()
+            self.save_model_weights()
 
         self.train_progbar.close()
         print("> Finish training")
@@ -202,9 +203,9 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        while True:
+        for batch in train_iterator:
             try:
-                self._train_function(train_iterator)  # Run train step
+                self._train_function(batch)  # Run train step
             except StopIteration:
                 break
             except tf.errors.OutOfRangeError:
@@ -234,14 +235,11 @@ class BaseTrainer(BaseRunner):
             # self._check_eval_interval()
 
         self.train_steps_per_epoch = train_steps
-        self.save_checkpoint()
-        self.save_model_weights()
         self.train_progbar.total = self.total_train_steps
         self.train_progbar.refresh()
 
     @tf.function
-    def _train_function(self, iterator):
-        batch = next(iterator)
+    def _train_function(self, batch):
         self.strategy.run(self._train_step, args=(batch,))
 
     @abc.abstractmethod
