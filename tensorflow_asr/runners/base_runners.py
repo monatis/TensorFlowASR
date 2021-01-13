@@ -201,17 +201,18 @@ class BaseTrainer(BaseRunner):
 
     def _train_epoch(self):
         """Train model one epoch."""
-        train_iterator = iter(self.train_data_loader)
+        #train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        while True:
-            try:
-                self._train_function(train_iterator)  # Run train step
-            except StopIteration:
-                break
-            except tf.errors.OutOfRangeError:
-                break
-            except Exception as e:
-                raise e
+        for batch in self.train_data_loader:
+            self.strategy.run(self.train_step, args=(batch,))
+            #try:
+                #self._train_function(train_iterator)  # Run train step
+            #except StopIteration:
+                #break
+            #except tf.errors.OutOfRangeError:
+                #break
+            #except Exception as e:
+                #raise e
 
             # Update steps
             self.steps.assign_add(1)
