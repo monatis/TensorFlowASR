@@ -203,16 +203,15 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        for batch in train_iterator:
-            self.strategy.run(self.train_step, args=(batch,))
-            #try:
-                #self._train_function(train_iterator)  # Run train step
-            #except StopIteration:
-                #break
-            #except tf.errors.OutOfRangeError:
-                #break
-            #except Exception as e:
-                #raise e
+        while True:
+            try:
+                self._train_function(train_iterator)  # Run train step
+            except StopIteration:
+                break
+            except tf.errors.OutOfRangeError:
+                break
+            except Exception as e:
+                raise e
 
             # Update steps
             self.steps.assign_add(1)
@@ -241,8 +240,11 @@ class BaseTrainer(BaseRunner):
 
     @tf.function
     def _train_function(self, iterator):
-        batch = next(iterator)
-        self.strategy.run(self._train_step, args=(batch,))
+        for _ in tf.range(5):
+            batch = iterator.get_next_as_optional()
+            if not batch.has_value():
+                break
+            self.strategy.run(self._train_step, args=(batch,))
 
     @abc.abstractmethod
     def _train_step(self, batch):
