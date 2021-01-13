@@ -243,7 +243,7 @@ class BaseTrainer(BaseRunner):
     @tf.function
     def _train_function(self, iterator):
         batch = next(iterator)
-        return self..strategy.run(self._train_step, args=(batch,))
+        return self.strategy.run(self._train_step, args=(batch,))
 
     @abc.abstractmethod
     def _train_step(self, batch):
