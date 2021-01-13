@@ -244,7 +244,7 @@ class BaseTrainer(BaseRunner):
             batch = iterator.get_next_as_optional()
             if not batch.has_value():
                 break
-            self.strategy.run(self._train_step, args=(batch,))
+            self.strategy.run(self._train_step, args=(batch.get_value(),))
 
     @abc.abstractmethod
     def _train_step(self, batch):
