@@ -205,7 +205,7 @@ class BaseTrainer(BaseRunner):
         train_steps = 0
         while True:
             try:
-                self._train_function(train_iterator)  # Run train step
+                loss = self._train_function(train_iterator)  # Run train step
             except StopIteration:
                 break
             except tf.errors.OutOfRangeError:
@@ -217,6 +217,8 @@ class BaseTrainer(BaseRunner):
             self.steps.assign_add(1)
             self.train_progbar.update(1)
             train_steps += 1
+            if train_steps % 1000 == 0:
+                print("loss", loss.numpy())
 
             # Run save checkpoint
             # self._check_save_interval()
