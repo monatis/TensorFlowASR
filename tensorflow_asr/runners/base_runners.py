@@ -74,7 +74,7 @@ class BaseTrainer(BaseRunner):
         # Steps and Epochs start from 0
         # Step must be int64 to use tf.summary
         self.steps = tf.Variable(0, trainable=False, dtype=tf.int64)
-        self.epochs = 0
+        self.epochs = 1
         self.train_steps_per_epoch = None
         self.eval_steps_per_epoch = None
         # Dataset
