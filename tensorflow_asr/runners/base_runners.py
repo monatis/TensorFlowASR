@@ -203,9 +203,9 @@ class BaseTrainer(BaseRunner):
         """Train model one epoch."""
         train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        for batch in train_iterator:
+        while True:
             try:
-                self._train_function(batch)  # Run train step
+                self._train_function(train_iterator)  # Run train step
             except StopIteration:
                 break
             except tf.errors.OutOfRangeError:
@@ -239,7 +239,8 @@ class BaseTrainer(BaseRunner):
         self.train_progbar.refresh()
 
     @tf.function
-    def _train_function(self, batch):
+    def _train_function(self, iterator):
+        batch = next(iterator)
         self.strategy.run(self._train_step, args=(batch,))
 
     @abc.abstractmethod
