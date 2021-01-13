@@ -124,7 +124,7 @@ conformer_trainer = TransducerTrainer(
 with conformer_trainer.strategy.scope():
     # build model
     conformer = Conformer(**config.model_config, vocabulary_size=text_featurizer.num_classes)
-    conformer._build(input_shape, prediction_max_length=max_prediction_length, batch_size=args.bs)
+    conformer._build(input_shape, prediction_max_length=max_prediction_length, batch_size=None)
     conformer.summary(line_length=120)
 
     optimizer = tf.keras.optimizers.Adam(
