@@ -201,9 +201,9 @@ class BaseTrainer(BaseRunner):
 
     def _train_epoch(self):
         """Train model one epoch."""
-        #train_iterator = iter(self.train_data_loader)
+        train_iterator = iter(self.train_data_loader)
         train_steps = 0
-        for batch in self.train_data_loader:
+        for batch in train_iterator:
             self.strategy.run(self.train_step, args=(batch,))
             #try:
                 #self._train_function(train_iterator)  # Run train step
