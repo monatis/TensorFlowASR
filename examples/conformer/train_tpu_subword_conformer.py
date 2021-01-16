@@ -140,5 +140,5 @@ with conformer_trainer.strategy.scope():
 conformer_trainer.compile(model=conformer, optimizer=optimizer,
                           max_to_keep=args.max_ckpts)
 
-#conformer_trainer.fit(train_dataset, eval_dataset, train_bs=args.bs, eval_bs=args.bs)
-conformer_trainer.fit(train_dataset, train_bs=args.bs)
+conformer_trainer.fit(train_dataset, eval_dataset, train_bs=args.bs, eval_bs=args.bs)
+#conformer_trainer.fit(train_dataset, train_bs=args.bs)
