@@ -194,7 +194,7 @@ class BaseTrainer(BaseRunner):
 
             # save at the end of epoch
             self.save_checkpoint()
-            self.save_model_weights()
+            #self.save_model_weights()
         # save and evaluate when training is done
             self.log_train_metrics()
             self._eval_epoch()
