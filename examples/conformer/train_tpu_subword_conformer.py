@@ -86,10 +86,10 @@ train_dataset = ASRTFRecordDataset(
     tfrecords_dir=config.learning_config.dataset_config.tfrecords_dir,
     speech_featurizer=speech_featurizer,
     text_featurizer=text_featurizer,
-    augmentations=config.learning_config.augmentations,
+    #augmentations=config.learning_config.augmentations,
     tfrecords_shards=args.tfrecords_shards,
     stage="train", cache=args.cache,
-    shuffle=True, buffer_size=args.bfs, enable_tpu=True,
+    shuffle=False, buffer_size=args.bfs, enable_tpu=True,
 )
 train_dataset.compute_max_lengths(args.max_lengths_path)
 
@@ -100,7 +100,7 @@ eval_dataset = ASRTFRecordDataset(
     speech_featurizer=speech_featurizer,
     text_featurizer=text_featurizer,
     stage="eval", cache=args.cache,
-    shuffle=True, buffer_size=args.bfs, enable_tpu=True,
+    shuffle=False, buffer_size=args.bfs, enable_tpu=True,
 )
 eval_dataset.compute_max_lengths(args.max_lengths_path)
 
