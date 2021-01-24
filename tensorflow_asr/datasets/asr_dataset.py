@@ -109,7 +109,8 @@ class ASRDataset(BaseDataset):
             return features, input_length, label, label_length, prediction, prediction_length
 
     def process(self, dataset, batch_size):
-        dataset = dataset.map(self.parse, num_parallel_calls=AUTOTUNE)
+        with tf.device('/CPU:0'):
+            dataset = dataset.map(self.parse, num_parallel_calls=AUTOTUNE)
 
         if self.cache:
             dataset = dataset.cache()
